@@ -86,45 +86,91 @@ public class Main {
                     String nameS = teclado.nextLine();
                     System.out.print("Email: ");
                     String emailS = teclado.nextLine();
-                    System.out.print("ID da Turma deste aluno: ");
-                    int idcourseSearch = teclado.nextInt();
 
-                    Course courseFound = courseService.findById(idcourseSearch);
-                    if (courseFound != null) {
-                        Student newStudent = new Student(nameS, emailS, courseFound);
+                    System.out.print("Digite os IDs dos cursos separados por vírgula (ex: 1,2): ");
+                    String idsInput = teclado.nextLine();
+                    String[] ids = idsInput.split(",");
+
+                    Student newStudent = new Student(nameS, emailS);
+                    boolean vinculouAlgum = false;
+
+                    for (String idStr : ids) {
+                        try {
+                            int idBusca = Integer.parseInt(idStr.trim());
+                            Course courseFound = courseService.findById(idBusca);
+                            if (courseFound != null) {
+                                newStudent.getCourses().add(courseFound);
+                                vinculouAlgum = true;
+                            } else {
+                                System.out.println("Aviso: Curso ID " + idBusca + " não encontrado.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Erro: '" + idStr + "' não é um ID válido.");
+                        }
+                    }
+
+                    if (vinculouAlgum) {
                         studentService.studentRegistration(newStudent);
-                        System.out.println("Aluno matriculado com sucesso!");
+                        System.out.println("\n Aluno matriculado com sucesso!");
+                        System.out.println("Cursos vinculados:");
+                        newStudent.getCourses().forEach(c -> System.out.println("- " + c.getNameCourse()));
                     } else {
-                        System.out.println("Erro: Turma não existe. Cadastre a turma primeiro!");
+                        System.out.println(" Erro: Nenhum curso válido foi selecionado. Aluno não cadastrado.");
                     }
                     break;
+
+
 
                 case 6:
                     System.out.println("\n--- LISTA DE ALUNOS NO BANCO ---");
                     studentService.findAll().forEach(System.out::println);
                     break;
 
-                case 7:
 
-                    System.out.print("ID da aluno para atualizar: ");
+                case 7:
+                    System.out.print("ID do aluno para atualizar: ");
                     int idS = teclado.nextInt();
                     teclado.nextLine();
+
                     Student sAlA = studentService.findById(idS);
                     if (sAlA != null) {
-                        System.out.print("Novo Nome: ");
-                        sAlA.setNameStudent(teclado.nextLine()
-                        );
+                        System.out.println("Aluno encontrado: " + sAlA.getNameStudent());
 
-                        System.out.print("Email: ");
+                        System.out.print("Novo Nome: ");
+                        sAlA.setNameStudent(teclado.nextLine());
+
+                        System.out.print("Novo Email: ");
                         sAlA.setEmail(teclado.nextLine());
 
+                        System.out.print("Digite os novos IDs dos cursos (ex: 1,2): ");
+                        String idaInput = teclado.nextLine();
+                        String[] ida = idaInput.split(",");
+
+                        sAlA.getCourses().clear();
+
+                        for (String idStr : ida) {
+                            try {
+                                int idBusca = Integer.parseInt(idStr.trim());
+                                Course courseFound = courseService.findById(idBusca);
+                                if (courseFound != null) {
+                                    sAlA.getCourses().add(courseFound);
+                                } else {
+                                    System.out.println("Aviso: Curso ID " + idBusca + " não encontrado.");
+                                }
+                            } catch (NumberFormatException e) {
+                                System.out.println("Erro: '" + idStr + "' não é um ID válido.");
+                            }
+                        }
+
                         studentService.update(sAlA);
-                        System.out.println("Aluno atualizada!");
+                        System.out.println("\n Aluno atualizado com sucesso!");
+                        System.out.println("Novos cursos vinculados:");
+                        sAlA.getCourses().forEach(c -> System.out.println("- " + c.getNameCourse()));
+
                     } else {
-                        System.out.println("Aluno não encontrada.");
+                        System.out.println("Aluno não encontrado.");
                     }
                     break;
-
 
 
                 case 8:
@@ -137,7 +183,8 @@ public class Main {
                     }
                     break;
 
-                case 0:
+
+                    case 0:
                     System.out.println("Encerrando...");
                     courseService.closeEntityManager();
                     studentService.closeEntityManager();

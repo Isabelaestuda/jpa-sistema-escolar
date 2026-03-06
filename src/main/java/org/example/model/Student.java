@@ -21,19 +21,33 @@ import java.util.Objects;
         @Column (name = "email")
         private String email;
 
-        @ManyToOne
-        @JoinColumn (name = "idCource")
-        private Course course;
+        @ManyToMany(fetch = FetchType.EAGER)
+        @JoinTable(
+                name = "student_courses",
+                joinColumns = @JoinColumn(name = "student_id"),
+                inverseJoinColumns = @JoinColumn(name = "course_id")
+        )
+        private java.util.List<Course> courses = new java.util.ArrayList<>();
+
+        public Student(String nameStudent, String email) {
+            this.nameStudent = nameStudent;
+            this.email = email;
+        }
+
+        public java.util.List<Course> getCourses() {
+            return courses;
+        }
+
+        public void setCourses(java.util.List<Course> courses) {
+            this.courses = courses;
+        }
+
 
 
         public Student() {
         }
 
-        public Student(String nameStudent, String email, Course course) {
-            this.nameStudent = nameStudent;
-            this.email = email;
-            this.course = course;
-        }
+
 
 
         public int getId() {
@@ -60,13 +74,7 @@ import java.util.Objects;
             this.email = email;
         }
 
-        public Course getTurma() {
-            return course;
-        }
 
-        public void setTurma(Course course) {
-            this.course = course;
-        }
 
         @Override
         public boolean equals(Object o) {
@@ -82,11 +90,16 @@ import java.util.Objects;
 
         @Override
         public String toString() {
+            String nomesCursos = courses.stream()
+                    .map(Course::getNameCourse)
+                    .reduce((a, b) -> a + ", " + b)
+                    .orElse("Nenhum curso");
+
             return "Aluno{" +
                     "id=" + id +
-                    ", nameStudent='" + nameStudent + '\'' +
+                    ", nome='" + nameStudent + '\'' +
                     ", email='" + email + '\'' +
-                    ", course=" + course +
+                    ", cursos=[" + nomesCursos + "]" +
                     '}';
         }
     }

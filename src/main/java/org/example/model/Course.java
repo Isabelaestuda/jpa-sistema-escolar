@@ -19,10 +19,12 @@ public class Course {
         private String shift;
 
 
-        @OneToMany(mappedBy = "course")
-        private java.util.List<Student> students = new java.util.ArrayList<>();
+    @ManyToMany(mappedBy = "courses")
+    private java.util.List<Student> students = new java.util.ArrayList<>();
 
-        public Course(){
+
+
+    public Course(){
 
         }
         public Course(String nameCourse, String shift) {
