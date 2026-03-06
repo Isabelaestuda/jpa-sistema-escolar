@@ -9,6 +9,14 @@
 
 Este é um sistema de console desenvolvido em Java para gerenciar o cadastro de turmas e alunos, utilizando o paradigma de mapeamento objeto-relacional (ORM) com **JPA** e **Hibernate**. O projeto demonstra a implementação de um CRUD completo com relacionamentos `@OneToMany` e `@ManyToOne`.
 
+## 🚀 Novidades da Versão 2.0
+
+Recentemente, o sistema passou por uma refatoração importante na camada de modelo e persistência:
+* **Migração de Relacionamento:** O vínculo entre Aluno e Curso foi evoluído de `@ManyToOne` para `@ManyToMany`.
+* **Flexibilidade de Matrícula:** Agora, um aluno pode estar vinculado a múltiplos cursos simultaneamente, refletindo melhor a realidade acadêmica.
+* **Persistência Avançada:** Implementação de `@JoinTable` para gerenciar a tabela intermediária de associações no banco de dados.
+* **Uso de Singleton:** Refinamento do `EntityManagerFactorySingleton` para garantir uma única instância de conexão por aplicação.
+
 ## 🚀 Tecnologias Utilizadas
 
 * **Java 21**: Utilizando recursos modernos da linguagem.
